@@ -25,6 +25,12 @@
 	#define BOOT_TARGET_USB(func)
 #endif
 
+#if (CONFIG_IS_ENABLED(CMD_NVME) && CONFIG_IS_ENABLED(CMD_CACHE) && CONFIG_IS_ENABLED(CMD_PCI))
+	#define BOOT_TARGET_NVME(func) func(NVME, nvme, 0)
+#else
+	#define BOOT_TARGET_NVME(func)
+#endif
+
 #if CONFIG_IS_ENABLED(CMD_PXE)
 	#define BOOT_TARGET_PXE(func) func(PXE, pxe, na)
 #else
@@ -39,6 +45,7 @@
 
 #define BOOT_TARGET_DEVICES(func) \
 	BOOT_TARGET_MMC(func, 1) \
+	BOOT_TARGET_NVME(func) \
 	BOOT_TARGET_USB(func) \
 	BOOT_TARGET_MMC(func, 0) \
 	BOOT_TARGET_PXE(func) \
