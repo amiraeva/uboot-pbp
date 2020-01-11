@@ -1,0 +1,8 @@
+PINEBOOK_PRO
+M:	Peter Robinson <pbrobinson at gmail.com>
+S:	Maintained
+F:	board/pine64/pinebook_pro_rk3399/
+F:	include/configs/pinebook_pro_rk3399.h
+F:	arch/arm/dts/rk3399-pinebook-pro.dts
+F:	arch/arm/dts/rk3399-pinebook-pro-u-boot.dtsi
+F:	configs/pinebook_pro-rk3399_defconfig
