@@ -8,7 +8,7 @@
 
 / {
 	chosen {
-		u-boot,spl-boot-order = "same-as-spl", &sdhci, &sdmmc;
+		u-boot,spl-boot-order = "same-as-spl", &spiflash, &sdhci, &sdmmc;
 	};
 };
 
@@ -22,4 +22,8 @@
 
 &uart2 {
         u-boot,dm-pre-reloc;
+};
+
+&pcie0 {
+	u-boot,dm-pre-reloc;
 };
