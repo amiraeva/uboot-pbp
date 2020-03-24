@@ -30,7 +30,7 @@
 	};
 
 	edp_panel: edp-panel {
-		compatible = "boe,nv140fhmn49";
+		compatible = "boe,nv140fhmn49", "simple-panel";
 		backlight = <&backlight>;
 		enable-gpios = <&gpio1 RK_PA0 GPIO_ACTIVE_HIGH>;
 		pinctrl-names = "default";
@@ -216,26 +216,6 @@
 
 &cpu_l3 {
 	cpu-supply = <&vdd_cpu_l>;
-};
-
-&edp {
-	force-hpd;
-	pinctrl-names = "default";
-	pinctrl-0 = <&edp_hpd>;
-	status = "okay";
-
-	ports {
-		edp_out: port@1 {
-			reg = <1>;
-			#address-cells = <1>;
-			#size-cells = <0>;
-
-			edp_out_panel: endpoint@0 {
-				reg = <0>;
-				remote-endpoint = <&panel_in_edp>;
-			};
-		};
-	};
 };
 
 &emmc_phy {

@@ -6,6 +6,10 @@
 
 #define LOG_DEBUG
 
+#define DEBUG
+#undef CONFIG_LOGLEVEL
+#define CONFIG_LOGLEVEL 7
+
 #include <common.h>
 #include <clk.h>
 #include <display.h>
@@ -1025,7 +1029,9 @@ static int rk_edp_probe(struct udevice *dev)
 	struct clk clk;
 	int ret;
 
-	ret = uclass_get_device_by_phandle(UCLASS_PANEL, dev, "edp_panel",
+	debug("probing in %s", __func__);
+
+	ret = uclass_get_device_by_phandle(UCLASS_PANEL, dev, "rockchip,panel",
 					   &priv->panel);
 	if (ret) {
 		debug("%s: Cannot find panel for '%s' (ret=%d)\n", __func__,
@@ -1057,11 +1063,11 @@ static int rk_edp_probe(struct udevice *dev)
 		return ret;
 	}
 
-	/* grf_edp_ref_clk_sel: from internal 24MHz or 27MHz clock */
-	rk_setreg(&priv->grf->soc_con25, 1 << 11);
-
 	/* select epd signal from vop0 */
 	rk_setreg(&priv->grf->soc_con20, 1 << 5);
+
+	/* grf_edp_ref_clk_sel: from internal 24MHz or 27MHz clock */
+	rk_setreg(&priv->grf->soc_con25, 1 << 11);
 
 	rockchip_edp_wait_hpd(priv);
 

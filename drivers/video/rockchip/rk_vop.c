@@ -4,6 +4,13 @@
  * Copyright 2014 Rockchip Inc.
  */
 
+#define LOG_DEBUG
+
+#define DEBUG
+#undef CONFIG_LOGLEVEL
+#define CONFIG_LOGLEVEL 8
+
+
 #include <common.h>
 #include <clk.h>
 #include <display.h>
