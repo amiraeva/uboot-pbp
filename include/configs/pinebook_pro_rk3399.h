@@ -26,4 +26,7 @@
 
 #define SDRAM_BANK_SIZE			(2UL << 30)
 
+#define CONFIG_USB_OHCI_NEW 1
+#define CONFIG_SYS_USB_OHCI_MAX_ROOT_PORTS 2
+
 #endif

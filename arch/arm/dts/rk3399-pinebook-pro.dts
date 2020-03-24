@@ -29,6 +29,31 @@
 		pwms = <&pwm0 0 740740 0>;
 	};
 
+	edp_panel: edp-panel {
+		compatible = "boe,nv140fhmn49";
+		backlight = <&backlight>;
+		enable-gpios = <&gpio1 RK_PA0 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&panel_en_gpio>;
+		power-supply = <&vcc3v3_panel>;
+
+		ports {
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			port@0 {
+				reg = <0>;
+				#address-cells = <1>;
+				#size-cells = <0>;
+
+				panel_in_edp: endpoint@0 {
+					reg = <0>;
+					remote-endpoint = <&edp_out_panel>;
+				};
+			};
+		};
+	};
+
 	gpio-keys {
 		compatible = "gpio-keys";
 		autorepeat;
@@ -156,6 +181,25 @@
 		regulator-min-microvolt = <800000>;
 		regulator-max-microvolt = <1400000>;
 	};
+
+	/* LCD panel power, called VCC3V3_S0 in schematic */
+	vcc3v3_panel: vcc3v3-panel {
+		compatible = "regulator-fixed";
+		enable-active-high;
+		gpio = <&gpio1 RK_PC6 GPIO_ACTIVE_HIGH>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&lcdvcc_en_gpio>;
+		regulator-always-on;
+		regulator-enable-ramp-delay = <100000>;
+		regulator-min-microvolt = <3300000>;
+		regulator-max-microvolt = <3300000>;
+		regulator-name = "vcc3v3_panel";
+		vin-supply = <&vcc3v3_sys>;
+
+		regulator-state-mem {
+			regulator-off-in-suspend;
+		};
+	};
 };
 
 &cpu_l0 {
@@ -172,6 +216,26 @@
 
 &cpu_l3 {
 	cpu-supply = <&vdd_cpu_l>;
+};
+
+&edp {
+	force-hpd;
+	pinctrl-names = "default";
+	pinctrl-0 = <&edp_hpd>;
+	status = "okay";
+
+	ports {
+		edp_out: port@1 {
+			reg = <1>;
+			#address-cells = <1>;
+			#size-cells = <0>;
+
+			edp_out_panel: endpoint@0 {
+				reg = <0>;
+				remote-endpoint = <&panel_in_edp>;
+			};
+		};
+	};
 };
 
 &emmc_phy {
@@ -453,6 +517,20 @@
 	fusb302x {
 		fusb0_int: fusb0-int {
 			rockchip,pins = <1 RK_PA2 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+	};
+
+	lcd-panel {
+		lcd_panel_reset_gpio: lcd-panel-reset-gpio {
+			rockchip,pins = <4 RK_PD6 RK_FUNC_GPIO &pcfg_pull_up>;
+		};
+
+		lcdvcc_en_gpio: lcdvcc-en-gpio {
+			rockchip,pins = <1 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
+		};
+
+		panel_en_gpio: panel-en-gpio {
+			rockchip,pins = <1 RK_PA0 RK_FUNC_GPIO &pcfg_pull_none>;
 		};
 	};
 

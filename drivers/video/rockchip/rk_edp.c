@@ -4,6 +4,8 @@
  * Copyright 2014 Rockchip Inc.
  */
 
+#define LOG_DEBUG
+
 #include <common.h>
 #include <clk.h>
 #include <display.h>
@@ -15,9 +17,10 @@
 #include <asm/gpio.h>
 #include <asm/io.h>
 #include <asm/arch-rockchip/clock.h>
+#include <asm/arch-rockchip/hardware.h>
 #include <asm/arch-rockchip/edp_rk3288.h>
-#include <asm/arch-rockchip/grf_rk3288.h>
-#include <dt-bindings/clock/rk3288-cru.h>
+#include <asm/arch-rockchip/grf_rk3399.h>
+#include <dt-bindings/clock/rk3399-cru.h>
 
 #define MAX_CR_LOOP 5
 #define MAX_EQ_LOOP 5
@@ -35,7 +38,7 @@ static const char * const pre_emph_names[] = {
 
 struct rk_edp_priv {
 	struct rk3288_edp *regs;
-	struct rk3288_grf *grf;
+	struct rk3399_grf_regs *grf;
 	struct udevice *panel;
 	struct link_train link_train;
 	u8 train_set[4];
@@ -1022,7 +1025,7 @@ static int rk_edp_probe(struct udevice *dev)
 	struct clk clk;
 	int ret;
 
-	ret = uclass_get_device_by_phandle(UCLASS_PANEL, dev, "rockchip,panel",
+	ret = uclass_get_device_by_phandle(UCLASS_PANEL, dev, "edp_panel",
 					   &priv->panel);
 	if (ret) {
 		debug("%s: Cannot find panel for '%s' (ret=%d)\n", __func__,
@@ -1045,7 +1048,7 @@ static int rk_edp_probe(struct udevice *dev)
 
 	ret = clk_get_by_index(uc_plat->src_dev, 0, &clk);
 	if (ret >= 0) {
-		ret = clk_set_rate(&clk, 192000000);
+		ret = clk_set_rate(&clk, 200000000);
 		clk_free(&clk);
 	}
 	if (ret < 0) {
@@ -1055,10 +1058,10 @@ static int rk_edp_probe(struct udevice *dev)
 	}
 
 	/* grf_edp_ref_clk_sel: from internal 24MHz or 27MHz clock */
-	rk_setreg(&priv->grf->soc_con12, 1 << 4);
+	rk_setreg(&priv->grf->soc_con25, 1 << 11);
 
-	/* select epd signal from vop0 or vop1 */
-	rk_setreg(&priv->grf->soc_con6, (vop_id == 1) ? (1 << 5) : (1 << 5));
+	/* select epd signal from vop0 */
+	rk_setreg(&priv->grf->soc_con20, 1 << 5);
 
 	rockchip_edp_wait_hpd(priv);
 
@@ -1079,7 +1082,7 @@ static const struct dm_display_ops dp_rockchip_ops = {
 };
 
 static const struct udevice_id rockchip_dp_ids[] = {
-	{ .compatible = "rockchip,rk3288-edp" },
+	{ .compatible = "rockchip,rk3399-edp" },
 	{ }
 };
 
